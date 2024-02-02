@@ -10,46 +10,69 @@ import java.util.NoSuchElementException;
  * for method specifications.
  */
 public class ListFIFOQueue<E> extends FIFOWorkList<E> {
-
+    private Node front;
+    private Node back;
+    private int size;
+    private class Node {
+        //fields
+        public E data;
+        public Node next;
+        // Constructs a node with a data value
+        public Node(E data) {
+            this.data = data;
+            this.next = null;
+        }
+    }
     public ListFIFOQueue() {
-        throw new NotYetImplementedException();
+        this.front = null;
+        this.back = null;
+        this.size = 0;
     }
 
     @Override
     public void add(E work) {
-        throw new NotYetImplementedException();
+        if (front == null) {
+            front = new Node(work);
+            back = front;
+        } else {
+            Node last = back;
+            last.next = new Node(work);
+            back = last.next;
+        }
+        this.size++;
     }
-
     @Override
     public E peek() {
-        throw new NotYetImplementedException();
+        if (!hasWork()) {
+            throw new NoSuchElementException();
+        }
+        else {
+            return front.data;
+        }
     }
 
     @Override
     public E next() {
-        throw new NotYetImplementedException();
+        if (!hasWork()) {
+            throw new NoSuchElementException();
+        }
+        else {
+            Node removed = front;
+            front = front.next;
+            this.size--;
+            return removed.data;
+        }
     }
 
     @Override
     public int size() {
-        throw new NotYetImplementedException();
+        return this.size;
     }
 
     @Override
     public void clear() {
-        throw new NotYetImplementedException();
+        this.front = null;
+        this.back = null;
+        size = 0;
     }
-
-    private class ListNode {
-
-        public E data;
-        public ListNode next;
-
-        public ListNode(E data) {
-            this.data = data;
-            next = null;
-        }
-
-    }
-
 }

@@ -12,19 +12,34 @@ import java.util.Comparator;
 public class MinFourHeap<E> extends PriorityWorkList<E> {
     /* Do not change the name of this field; the tests rely on it to work correctly. */
     private E[] data;
+    private int size;
+    private Comparator<E> comparator;
 
     public MinFourHeap(Comparator<E> c) {
-        throw new NotYetImplementedException();
+        this.data = (E[]) new Object[10];
+        this.size = 0;
+        this.comparator = comparator;
     }
 
     @Override
     public boolean hasWork() {
-        throw new NotYetImplementedException();
+        return super.hasWork();
     }
 
     @Override
     public void add(E work) {
-        throw new NotYetImplementedException();
+        if (this.size == this.data.length) {
+            E[] updatedArray = (E[]) new Object[this.size * 2];
+            for (int i = 0; i < this.size; i++) {
+                updatedArray[i] = this.data[i];
+            }
+            this.data = updatedArray;
+        }
+        this.data[this.size] = work;
+
+        if (this.size > 0) {
+
+        }
     }
 
     @Override
