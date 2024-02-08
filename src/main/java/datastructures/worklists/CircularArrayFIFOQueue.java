@@ -9,15 +9,15 @@ import java.util.NoSuchElementException;
  * See cse332/interfaces/worklists/FixedSizeFIFOWorkList.java
  * for method specifications.
  */
-public class CircularArrayFIFOQueue<E> extends FixedSizeFIFOWorkList<E> {
-    private E[] circularArray;
+public class CircularArrayFIFOQueue<E extends Comparable<E>> extends FixedSizeFIFOWorkList<E> {
+    public E[] circularArray;
     private int front;
     private int back;
 
     private int size;
     public CircularArrayFIFOQueue(int capacity) {
         super(capacity);
-        this.circularArray = (E[]) new Object[capacity];
+        this.circularArray = (E[]) new Comparable[capacity];
         this.front = 0;
         // indicates circular array is empty and incrementing back will make index 0 and the front E in the array
         this.back = -1;
@@ -84,35 +84,48 @@ public class CircularArrayFIFOQueue<E> extends FixedSizeFIFOWorkList<E> {
 
     @Override
     public void clear() {
-        for (int i = 0; i < circularArray.length; i++) {
-            circularArray[i] = null;
-        }
-        front = 0;
-        back = -1;
-        size = 0;
+        this.size = 0;
+        this.front = 0;
     }
 
     @Override
+    // what should i be comparing
     public int compareTo(FixedSizeFIFOWorkList<E> other) {
         // You will implement this method in project 2. Leave this method unchanged for project 1.
-        throw new NotYetImplementedException();
+        // check the sizes, if length of this is smaller, it will be less than
+        int smallerLength = Math.min(this.size(), other.size());
+        int compareValue = 0;
+        for (int i = 0; i < smallerLength; i++) {
+            compareValue = this.peek(i).compareTo(other.peek(i));
+            if (compareValue != 0) {
+                return compareValue;
+            }
+        }
+        return this.size() - other.size();
+
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public boolean equals(Object obj) {
         // You will finish implementing this method in project 2. Leave this method unchanged for project 1.
+        // if the current circular array is equal to obj (the same circular array) automatically return true
         if (this == obj) {
             return true;
+            // if the object we are comparing to is not an object of the type, automatically false
         } else if (!(obj instanceof FixedSizeFIFOWorkList<?>)) {
             return false;
+            //
         } else {
-            // Uncomment the line below for p2 when you implement equals
-            // FixedSizeFIFOWorkList<E> other = (FixedSizeFIFOWorkList<E>) obj;
+            // object IS same object type as this
+            FixedSizeFIFOWorkList<E> other = (FixedSizeFIFOWorkList<E>) obj;
+            // if the sizes are not equal, it won't be the same
+            if (other.size() != this.size()) {
+                return false;
 
-            // Your code goes here
-
-            throw new NotYetImplementedException();
+            } else {
+                return (this.compareTo(other) == 0);
+            }
         }
     }
 

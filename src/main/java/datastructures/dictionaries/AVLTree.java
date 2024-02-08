@@ -28,4 +28,9 @@ import cse332.datastructures.trees.BinarySearchTree;
 
 public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTree<K, V> {
     // TODO: Implement me!
+//    private class AvlNode extends BSTNode {
+//        int height;
+//    }
+
+    // array filled with index 0 as left and index 1 as right
 }
