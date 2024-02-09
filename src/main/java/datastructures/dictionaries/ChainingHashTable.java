@@ -33,7 +33,7 @@ public class ChainingHashTable<K, V> extends DeletelessDictionary<K, V> {
 
     @Override
     public V insert(K key, V value) {
-        throw new NotYetImplementedException();
+
     }
 
     @Override
