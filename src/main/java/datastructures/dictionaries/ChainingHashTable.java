@@ -4,8 +4,10 @@ import cse332.datastructures.containers.Item;
 import cse332.exceptions.NotYetImplementedException;
 import cse332.interfaces.misc.DeletelessDictionary;
 import cse332.interfaces.misc.Dictionary;
+import cse332.interfaces.misc.SimpleIterator;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Supplier;
 
 /**
@@ -23,27 +25,115 @@ import java.util.function.Supplier;
  */
 public class ChainingHashTable<K, V> extends DeletelessDictionary<K, V> {
     private Supplier<Dictionary<K, V>> newChain;
-
+    private double loadFactor;
+    private Dictionary<K,V>[] hashTable;
+    private double max;
+    private int prime;
     static final int[] PRIME_SIZES =
             {11, 23, 47, 97, 193, 389, 773, 1549, 3089, 6173, 12347, 24697, 49393, 98779, 197573, 395147};
-
     public ChainingHashTable(Supplier<Dictionary<K, V>> newChain) {
         this.newChain = newChain;
+        this.prime = 0;
+        this.hashTable = (Dictionary<K, V>[]) new Dictionary[PRIME_SIZES[prime]];
+        this.max = 0.5;
+        loadFactor = (double) this.size / this.hashTable.length;
     }
 
     @Override
     public V insert(K key, V value) {
+        if(key == null || value == null) {
+            throw new IllegalArgumentException();
+        }
+        int i = Math.abs(key.hashCode() % this.hashTable.length);
+        if (this.hashTable[i] == null) {
+            this.hashTable[i] = newChain.get();
+        }
+        Dictionary<K, V> list = this.hashTable[i];
+        V priorVal = this.hashTable[i].insert(key, value);
+        if (priorVal == null) {
+            size++;
+        }
+        this.checkHash();
+        return priorVal;
+    }
 
+    private void checkHash() {
+        this.loadFactor = (double) (this.size / this.hashTable.length);
+        if (this.loadFactor >= max) {
+            rehash();
+        }
+    }
+
+    private void rehash() {
+        int updatedSize = size;
+        if (this.prime < PRIME_SIZES.length - 1) {
+            updatedSize = PRIME_SIZES[this.prime];
+            this.prime += 1;
+        } else if (this.prime >= PRIME_SIZES.length) {
+            updatedSize *= 2;
+        }
+        Dictionary<K, V>[] temp = (Dictionary<K, V>[]) new Dictionary[updatedSize];
+        for(int i = 0; i < temp.length; i++) {
+            if (temp[i] != null) {
+                Dictionary<K,V> currBucket = temp[i];
+                for(Item<K,V> currItem: currBucket) {
+                    insert(currItem.key, currItem.value);
+                }
+            }
+        }
     }
 
     @Override
     public V find(K key) {
-        throw new NotYetImplementedException();
+        if (key == null) {
+            throw new IllegalArgumentException();
+        }
+        int i = Math.abs(key.hashCode() % this.hashTable.length);
+        if(this.hashTable[i] == null) {
+            return null;
+        }
+        return this.hashTable[i].find(key);
     }
 
     @Override
     public Iterator<Item<K, V>> iterator() {
-        throw new NotYetImplementedException();
+        return new HashIterator();
+    }
+
+    private class HashIterator extends SimpleIterator<Item<K,V>> {
+        private int index;
+        private Iterator<Item<K, V>> dictionaryItr;
+
+        public HashIterator() {
+            index = 0;
+            dictionaryItr = null;
+        }
+        @Override
+        public boolean hasNext() {
+            while(index < hashTable.length){
+                if(dictionaryItr == null && hashTable[index] != null){
+                    dictionaryItr = hashTable[index].iterator();
+                }
+
+                if(dictionaryItr != null) {
+                    if(dictionaryItr.hasNext()) {
+                        return true;
+                    } else {
+                        dictionaryItr = null;
+                    }
+                }
+                index++;
+            }
+            return false;
+        }
+
+        @Override
+        public Item<K, V> next() {
+            if(!hasNext()) {
+                throw new NoSuchElementException();
+            }
+            return new Item<K, V>(dictionaryItr.next());
+        }
     }
 
     /**
@@ -52,6 +142,13 @@ public class ChainingHashTable<K, V> extends DeletelessDictionary<K, V> {
      */
     @Override
     public String toString() {
-        return "ChainingHashTable String representation goes here.";
+        String stringRepresentation = "";
+
+        for(int i = 0; i < this.hashTable.length; i++){
+            if(this.hashTable[i] != null){
+                stringRepresentation += this.hashTable[i].toString() + " ,";
+            }
+        }
+        return stringRepresentation;
     }
 }
