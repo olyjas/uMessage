@@ -27,12 +27,12 @@ import cse332.datastructures.trees.BinarySearchTree;
  */
 
 // don't call find(K key, V value) method with a non-null second argument
-    // don't write a separate find(key) method
+// don't write a separate find(key) method
 public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTree<K, V> {
     // TODO: Implement me!
 
     // inner class of AVLNode
-    private class AVLNode extends BSTNode {
+    public class AVLNode extends BSTNode {
         // added field for height
         // BSTNode array is length 2 with index 0 as left node and index 1 as right node
         int height;
@@ -41,9 +41,6 @@ public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTre
             this.height = 0;
         }
     }
-    public AVLTree() {
-        super();
-    }
 
     // x = root.key()
     //t.element = key
@@ -51,8 +48,10 @@ public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTre
         if (key == null || value == null) {
             throw new IllegalArgumentException();
         }
-        AVLNode curr = castAVLNode(this.root); // root node to start insertion with
+
         int child = -1;
+        AVLNode curr = castAVLNode(this.root); // root node to start insertion with
+
         if (find(key)!=null) {
             // this key exists already, so we just change the value
             AVLNode prev = null;
@@ -66,22 +65,22 @@ public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTre
                     curr.value = value; //update curr node value to the one passed in
                     return val;
                 } else {
-                        child = Integer.signum(direction + 1);
-                        prev = curr;
-                        curr = castAVLNode(curr.children[child]);
+                    child = Integer.signum(direction + 1);
+                    prev = curr;
+                    curr = castAVLNode(curr.children[child]);
                 }
             }
         }
         this.root = insert(key, value, curr);
         this.size++;
-        return null;
+        return value;
     }
     // x = key
     //t.element = root.key
     private AVLNode insert(K key, V value, AVLNode node) {
         if (node == null) {
             // insert location for leaf to be inserted (because node is null)
-            return new AVLNode (key, value);
+            return new AVLNode(key, value);
         } else {
             int comparedResult = key.compareTo(node.key);
             if (comparedResult < 0) {
@@ -104,7 +103,7 @@ public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTre
     }
     private AVLNode checkBalance(AVLNode node) {
         if (node == null) {
-            return null;
+            return node;
         }
         if (height(castAVLNode(node.children[0])) - height(castAVLNode(node.children[1])) > 1) {
             if (height(castAVLNode(node.children[0].children[0])) >= height(castAVLNode(node.children[0].children[1]))) {
@@ -120,7 +119,7 @@ public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTre
                 node = doubleRotateWithRightChild(node);
             }
         }
-        node.height = Math.max(height(castAVLNode(node.children[0])), height(castAVLNode(node.children[0])) + 1);
+        node.height = Math.max(height(castAVLNode(node.children[1])), height(castAVLNode(node.children[0]))) + 1;
         return node;
     }
 
@@ -153,11 +152,6 @@ public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTre
     }
 
     private AVLNode castAVLNode (BSTNode bstNode) {
-            return (AVLNode) bstNode;
-
+        return (AVLNode) bstNode;
     }
 }
-
-
-
-
