@@ -10,23 +10,31 @@ public class TopKSort {
         sort(array, k, (x, y) -> x.compareTo(y));
     }
 
+
     public static <E> void sort(E[] array, int k, Comparator<E> comparator) {
         if (k > array.length) {
             k = array.length;
+        } else if (array.length == 0) {
+            return;
         }
-        MinFourHeap<E> sortingHeap = new MinFourHeap<E>(comparator);
+
+        MinFourHeap<E> heap = new MinFourHeap<>(comparator);
         for (int i = 0; i < k; i++) {
-            sortingHeap.add(array[i]);
+            heap.add(array[i]);
         }
+
+
+
         for (int i = k; i < array.length; i++) {
-            if (comparator.compare(array[i], sortingHeap.peek()) > 0) {
-                sortingHeap.next();
-                sortingHeap.add(array[i]);
+            if (comparator.compare(array[i], heap.peek()) > 0) {
+                heap.next();
+                heap.add(array[i]);
             }
             array[i] = null;
         }
+
         for (int i = 0; i < k; i++) {
-            array[i] = sortingHeap.next();
+            array[i] = heap.next();
         }
     }
 }
