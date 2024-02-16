@@ -41,6 +41,9 @@ public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTre
             this.height = 0;
         }
     }
+    public AVLTree() {
+        super();
+    }
 
     // x = root.key()
     //t.element = key
@@ -79,17 +82,17 @@ public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTre
         if (node == null) {
             // insert location for leaf to be inserted (because node is null)
             return new AVLNode (key, value);
+        } else {
+            int comparedResult = key.compareTo(node.key);
+            if (comparedResult < 0) {
+                node.children[0] = insert(key, value, (AVLNode) node.children[0]);
+            }
+            // insert into right child
+            else if (comparedResult > 0) {
+                node.children[1] = insert(key, value, (AVLNode) node.children[1]);
+            }
         }
-        int comparedResult = key.compareTo(node.key);
-
         // insert into left child
-        if (comparedResult < 0) {
-            node.children[0] = insert(key, value, (AVLNode) node.children[0]);
-        }
-        // insert into right child
-        else if (comparedResult > 0) {
-            node.children[1] = insert(key, value, (AVLNode) node.children[1]);
-        }
         return checkBalance(node);
     }
 
@@ -101,7 +104,7 @@ public class AVLTree<K extends Comparable<? super K>, V> extends BinarySearchTre
     }
     private AVLNode checkBalance(AVLNode node) {
         if (node == null) {
-            return node;
+            return null;
         }
         if (height(castAVLNode(node.children[0])) - height(castAVLNode(node.children[1])) > 1) {
             if (height(castAVLNode(node.children[0].children[0])) >= height(castAVLNode(node.children[0].children[1]))) {
