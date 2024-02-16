@@ -10,7 +10,6 @@ public class TopKSort {
         sort(array, k, (x, y) -> x.compareTo(y));
     }
 
-
     public static <E> void sort(E[] array, int k, Comparator<E> comparator) {
         if (k > array.length) {
             k = array.length;
