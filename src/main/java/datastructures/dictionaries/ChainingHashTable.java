@@ -44,17 +44,24 @@ public class ChainingHashTable<K, V> extends DeletelessDictionary<K, V> {
         if(key == null || value == null) {
             throw new IllegalArgumentException();
         }
-        int i = Math.abs(key.hashCode() % this.hashTable.length);
-        if (this.hashTable[i] == null) {
-            this.hashTable[i] = newChain.get();
+        int index = Math.abs(key.hashCode() % this.hashTable.length);
+        V val = null;
+        if (loadFactor >= 2.0) {
+            rehash();
+            index = Math.abs(key.hashCode() % hashTable.length);
         }
-        Dictionary<K, V> list = this.hashTable[i];
-        V priorVal = this.hashTable[i].insert(key, value);
-        if (priorVal == null) {
+        if (hashTable[index] == null) {
+            hashTable[index] = newChain.get();
+        }
+        if (hashTable[index].find(key)== null) {
             size++;
+        } else {
+            val = hashTable[index].find(key);
         }
-        this.checkHash();
-        return priorVal;
+        hashTable[index].insert(key, value);
+        loadFactor = ((double) (size + 1) / hashTable.length);
+
+        return val;
     }
 
     private void checkHash() {
@@ -89,7 +96,8 @@ public class ChainingHashTable<K, V> extends DeletelessDictionary<K, V> {
             throw new IllegalArgumentException();
         }
         int i = Math.abs(key.hashCode() % this.hashTable.length);
-        if(this.hashTable[i] == null) {
+        if(hashTable[i] == null) {
+            hashTable[i] = newChain.get();
             return null;
         }
         return this.hashTable[i].find(key);
