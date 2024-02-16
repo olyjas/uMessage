@@ -51,7 +51,11 @@ public class CircularArrayFIFOQueue<E extends Comparable<E>> extends FixedSizeFI
         if (i < 0 || i >= size) {
             throw new IndexOutOfBoundsException();
         }
-        return circularArray[(front + i) % circularArray.length];
+
+        if (i >= capacity() - front) {
+            return circularArray[((front + i) % capacity())];
+        }
+        return circularArray[front + i];
     }
 
     @Override
@@ -74,7 +78,11 @@ public class CircularArrayFIFOQueue<E extends Comparable<E>> extends FixedSizeFI
         if (i < 0 || i >= size()) {
             throw new IndexOutOfBoundsException();
         }
-        circularArray[(front + i) % circularArray.length] = value;
+
+        if (i >= capacity() - front) {
+            circularArray[((front + i) % capacity())] = value;
+        }
+        circularArray[front + i] = value;
     }
 
     @Override
